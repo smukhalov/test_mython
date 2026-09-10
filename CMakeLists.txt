@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.30)
-project(test10)
+cmake_minimum_required(VERSION 3.25)
+project(test_mython)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(test10 main.cpp
+add_executable(test_mython main.cpp
         comparators.cpp
         comparators.h
         lexer.cpp
