@@ -10,6 +10,22 @@ namespace Ast {
 
 using Runtime::Closure;
 
+std::string Join(const std::vector<std::string> v) {
+    std::stringstream ss;
+    size_t count = v.size();
+    bool not_first_element = false;
+    for(size_t i = 0; i < count; ++i){
+        const std::string& id = v[i];
+        if(not_first_element){
+            ss << '.';
+        } else {
+            not_first_element = true;
+        }
+        ss << id;
+    }
+    return ss.str();
+}
+
 void Dump(const std::string& prefix, const Closure& closure, std::ostream& out = std::cout){
     out << prefix << '\n';
     for(const auto& [key, value] : closure){
@@ -39,6 +55,7 @@ VariableValue::VariableValue(std::vector<std::string> dotted_ids) : dotted_ids_(
 }
 
 ObjectHolder VariableValue::Execute(Closure& closure) {
+    Dump("VariableValue::Execute. closure", closure);
     size_t count = dotted_ids_.size();
     for(size_t i = count; i > 0; --i){
         std::stringstream ss;
@@ -54,36 +71,34 @@ ObjectHolder VariableValue::Execute(Closure& closure) {
         }
         std::string s = ss.str();
         if(auto it = closure.find(s); it != closure.end()){
+            std::cout << "s = " << s << " found in closure \n ------------------------\n";
+            if(i == count){
+                return it->second;
+            }
             ObjectHolder oh = it->second;
             Runtime::ClassInstance* ci = oh.TryAs<Runtime::ClassInstance>();
             if(ci) {
                 Dump("ci->Fields()", ci->Fields());
 
-                return ci->Fields()[dotted_ids_[count-1]];
-//                std::string qq = dotted_ids_[i-1];
-//                std::cout << "qq - " << qq << '\n';
-//                return ci->Fields()[dotted_ids_[i-1]];
-                //return ci->Fields()["self"];
+                //std::cout << "s = "<< s << "; Check index: count = " << count << "; i = " << i << '\n';
+                std::string field_name = dotted_ids_[1];
+                std::cout << "field_name = "<< field_name << "; Check index: count = " << count << "; i = " << i << '\n';
+                if(auto it_ci = ci->Fields().find(field_name); it_ci != ci->Fields().end()){
+                    return it_ci->second;
+                }
+                throw std::runtime_error("it_ci == ci->Fields().end()");
             }
             return oh;
+        } else {
+            std::cout << "s = " << s << " not found in closure \n ------------------------\n";
         }
     }
 
-    std::stringstream ss;
-    bool not_first_element = false;
-    for(size_t i = 0; i < count; ++i){
-        const std::string& id = dotted_ids_[i];
-        if(not_first_element){
-            ss << '.';
-        } else {
-            not_first_element = true;
-        }
-        ss << id;
-    }
+    std::string dotted_ids_to_string = Join(dotted_ids_);
     std::stringstream ss_closure;
     Dump("VariableValue::Execute", closure, ss_closure);
 
-    throw std::runtime_error("VariableValue::Execute. Variable " + ss.str()
+    throw std::runtime_error("VariableValue::Execute. Variable " + dotted_ids_to_string
         + " is not found in closure. Closure.size() = " + std::to_string(closure.size())
         + "\n" + ss_closure.str());
 }
@@ -252,12 +267,13 @@ FieldAssignment::FieldAssignment(VariableValue object, std::string field_name, s
 {}
 
 ObjectHolder FieldAssignment::Execute(Runtime::Closure& closure) {
-    ObjectHolder oh = object_.Execute(closure);
-    Runtime::ClassInstance* ci = oh.TryAs<Runtime::ClassInstance>();
-    if(!ci){
-        throw std::runtime_error("FieldAssignment::Execute. object_ is not Runtime::ClassInstance");
-    }
     std::string s = field_name_;
+    ObjectHolder oh = object_.Execute(closure);
+//    Runtime::ClassInstance* ci = oh.TryAs<Runtime::ClassInstance>();
+//    if(!ci){
+//        throw std::runtime_error("FieldAssignment::Execute. object_ is not Runtime::ClassInstance");
+//    }
+
     closure[field_name_] = right_value_->Execute(closure);
     return closure[field_name_];
 //    ci->Fields()[field_name_] = right_value_->Execute(closure);

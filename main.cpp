@@ -119,6 +119,7 @@ void Test1() {
 class Counter:
   def __init__(x, y):
     self.x = x
+    self.x = self.x + 5
     self.y = y
 
 obj = Counter(2, 5)
@@ -135,21 +136,20 @@ void Test2() {
     istringstream input(R"(
 class Counter:
   def __init__():
-    self.value = 0
+    self.value = 1
 
   def add():
     self.value = self.value + 1
 
 x = Counter()
 x.add()
-
 print x.value
 
 )");
     ostringstream output;
     RunMythonProgram(input, output);
 
-    ASSERT_EQUAL(output.str(), "1\n");
+    ASSERT_EQUAL(output.str(), "2\n");
 }
 
 void TestAll() {
