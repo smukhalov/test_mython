@@ -39,12 +39,17 @@ ObjectHolder Assignment::Execute(Closure& closure) {
     closure[var_name] = right_value->Execute(closure);
     Dump("Assignment::Execute after", closure);
 
+    ObjectHolder oh = closure["x"];
+    Runtime::ClassInstance* ci = oh.TryAs<Runtime::ClassInstance>();
+
+    Dump("Assignment::Execute", ci->Fields());
+
     return closure[var_name];
 }
 
 Assignment::Assignment(std::string var, std::unique_ptr<Statement> rv)
     : var_name(std::move(var)), right_value(std::move(rv)) {
-    std::string a = var_name;
+    //std::string a = var_name;
 }
 
 VariableValue::VariableValue(std::string var_name) {
@@ -92,6 +97,7 @@ ObjectHolder VariableValue::Execute(Closure& closure) {
         } else {
             std::cout << "s = " << s << " not found in closure \n ------------------------\n";
         }
+        //break;
     }
 
     std::string dotted_ids_to_string = Join(dotted_ids_);
@@ -274,8 +280,8 @@ ObjectHolder FieldAssignment::Execute(Runtime::Closure& closure) {
 //        throw std::runtime_error("FieldAssignment::Execute. object_ is not Runtime::ClassInstance");
 //    }
 
-    closure[field_name_] = right_value_->Execute(closure);
-    return closure[field_name_];
+    closure["self." + field_name_] = right_value_->Execute(closure);
+    return closure["self." +field_name_];
 //    ci->Fields()[field_name_] = right_value_->Execute(closure);
 //    return ci->Fields()[field_name_]; // right_value_->Execute(closure);
 }

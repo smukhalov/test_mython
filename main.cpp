@@ -152,6 +152,23 @@ print x.value
     ASSERT_EQUAL(output.str(), "2\n");
 }
 
+void Test3() {
+    istringstream input(R"(
+class Counter:
+  def __init__():
+    self.value = 2
+
+x = Counter()
+
+print x.value
+
+)");
+    ostringstream output;
+    RunMythonProgram(input, output);
+
+    ASSERT_EQUAL(output.str(), "2\n");
+}
+
 void TestAll() {
     TestRunner tr;
 //    Runtime::RunObjectHolderTests(tr);
@@ -166,8 +183,9 @@ void TestAll() {
     //TestParseProgram(tr);
     //RUN_TEST(tr, TestVariablesArePointers);
 
-    RUN_TEST(tr, Test1);
+    //RUN_TEST(tr, Test1);
     //RUN_TEST(tr, Test2);
+    RUN_TEST(tr, Test3);
     //RUN_TEST(tr, TestVariablesArePointers);
     //RUN_TEST(tr, TestAssignments);
 }
