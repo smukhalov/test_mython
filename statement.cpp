@@ -39,10 +39,10 @@ ObjectHolder Assignment::Execute(Closure& closure) {
     closure[var_name] = right_value->Execute(closure);
     Dump("Assignment::Execute after", closure);
 
-    ObjectHolder oh = closure["x"];
-    Runtime::ClassInstance* ci = oh.TryAs<Runtime::ClassInstance>();
+    //ObjectHolder oh = closure["x"];
+    //Runtime::ClassInstance* ci = oh.TryAs<Runtime::ClassInstance>();
 
-    Dump("Assignment::Execute", ci->Fields());
+    //Dump("Assignment::Execute", ci->Fields());
 
     return closure[var_name];
 }
@@ -86,7 +86,7 @@ ObjectHolder VariableValue::Execute(Closure& closure) {
                 Dump("ci->Fields()", ci->Fields());
 
                 //std::cout << "s = "<< s << "; Check index: count = " << count << "; i = " << i << '\n';
-                std::string field_name = dotted_ids_[1];
+                std::string field_name = "self." +  dotted_ids_[1];
                 std::cout << "field_name = "<< field_name << "; Check index: count = " << count << "; i = " << i << '\n';
                 if(auto it_ci = ci->Fields().find(field_name); it_ci != ci->Fields().end()){
                     return it_ci->second;

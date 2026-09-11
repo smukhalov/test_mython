@@ -129,7 +129,7 @@ print obj.x, obj.y
     ostringstream output;
     RunMythonProgram(input, output);
 
-    ASSERT_EQUAL(output.str(), "2 5\n");
+    ASSERT_EQUAL(output.str(), "7 5\n");
 }
 
 void Test2() {
@@ -159,21 +159,21 @@ class Counter:
     self.value = 2
 
 x = Counter()
-
-print x.value
+y = x
+print x.value, y.value
 
 )");
     ostringstream output;
     RunMythonProgram(input, output);
 
-    ASSERT_EQUAL(output.str(), "2\n");
+    ASSERT_EQUAL(output.str(), "2 2\n");
 }
 
 void TestAll() {
     TestRunner tr;
 //    Runtime::RunObjectHolderTests(tr);
 //    Runtime::RunObjectsTests(tr);
-//    Ast::RunUnitTests(tr);
+    Ast::RunUnitTests(tr);
 //    Parse::RunLexerTests(tr);
 //
 //    RUN_TEST(tr, TestSimplePrints);
@@ -183,9 +183,9 @@ void TestAll() {
     //TestParseProgram(tr);
     //RUN_TEST(tr, TestVariablesArePointers);
 
-    //RUN_TEST(tr, Test1);
-    //RUN_TEST(tr, Test2);
-    RUN_TEST(tr, Test3);
+//    RUN_TEST(tr, Test1);
+//    RUN_TEST(tr, Test2);
+//    RUN_TEST(tr, Test3);
     //RUN_TEST(tr, TestVariablesArePointers);
     //RUN_TEST(tr, TestAssignments);
 }

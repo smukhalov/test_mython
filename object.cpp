@@ -64,6 +64,14 @@ ObjectHolder ClassInstance::Call(const std::string& method, const std::vector<Ob
         Fields()[m->formal_params[i]] = actual_args[i];
     }
 
+    std::cout << "ClassInstance::Call Fields().size() = " << Fields().size() << '\n';
+    if(Fields().empty()){
+        Runtime::ClassInstance object{class_};
+        Fields()["self"] = Runtime::ObjectHolder::Share(object);
+
+        //return m->body->Execute(object.Fields());
+    }
+
     return m->body->Execute(Fields());
 //    if(auto it = this->Fields().find("self"); it == this->Fields().end()) {
 //        ClassInstance ci(class_);
