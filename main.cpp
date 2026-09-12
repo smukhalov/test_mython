@@ -172,8 +172,8 @@ print x.value, y.value
 void TestAll() {
     TestRunner tr;
 //    Runtime::RunObjectHolderTests(tr);
-//    Runtime::RunObjectsTests(tr);
-    Ast::RunUnitTests(tr);
+    Runtime::RunObjectsTests(tr);
+//    Ast::RunUnitTests(tr);
 //    Parse::RunLexerTests(tr);
 //
 //    RUN_TEST(tr, TestSimplePrints);

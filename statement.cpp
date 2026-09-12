@@ -53,70 +53,25 @@ VariableValue::VariableValue(std::vector<std::string> dotted_ids) : dotted_ids_(
 }
 
 ObjectHolder VariableValue::Execute(Closure& closure) {
-    Dump("VariableValue::Execute. closure", closure);
-    std::string s = Join(dotted_ids_);
-    std::cout << "dotted_ids_ = " << s << '\n';
-
-    if(dotted_ids_.size() == 1) {
-        if (auto it = closure.find(dotted_ids_[0]); it != closure.end()) {
-            return it->second;
-        }
+    if(closure.empty()){
+        throw std::runtime_error("VariableValue::Execute error. closure.size() == 0");
     }
-    if(dotted_ids_.size() == 2) {
-        if (auto it = closure.find(dotted_ids_[0]); it != closure.end()) {
-            ObjectHolder oh = it->second;
-            auto ci = oh.TryAs<Runtime::ClassInstance>();
-            return ci->Fields()[dotted_ids_[1]];
 
-        }
+    auto it = closure.find(dotted_ids_[0]);
+    if(it == closure.end()) {
+        throw std::runtime_error("VariableValue::Execute. Variable " + dotted_ids_[0] + " not found in closure");
     }
-    throw std::runtime_error("VariableValue::Execute. Variable " + s);
-//    size_t count = dotted_ids_.size();
-//    for(size_t i = count; i > 0; --i){
-//        std::stringstream ss;
-//        bool not_first_element = false;
-//        for(size_t j = 0; j < i; ++j){
-//            const std::string& id = dotted_ids_[j];
-//            if(not_first_element){
-//                ss << '.';
-//            } else {
-//                not_first_element = true;
-//            }
-//            ss << id;
-//        }
-//        std::string s = ss.str();
-//        if(auto it = closure.find(s); it != closure.end()){
-//            std::cout << "s = " << s << " found in closure \n ------------------------\n";
-//            if(i == count){
-//                return it->second;
-//            }
-//            ObjectHolder oh = it->second;
-//            Runtime::ClassInstance* ci = oh.TryAs<Runtime::ClassInstance>();
-//            if(ci) {
-//                Dump("ci->Fields()", ci->Fields());
-//
-//                //std::cout << "s = "<< s << "; Check index: count = " << count << "; i = " << i << '\n';
-//                std::string field_name = "self." +  dotted_ids_[1];
-//                std::cout << "field_name = "<< field_name << "; Check index: count = " << count << "; i = " << i << '\n';
-//                if(auto it_ci = ci->Fields().find(field_name); it_ci != ci->Fields().end()){
-//                    return it_ci->second;
-//                }
-//                throw std::runtime_error("it_ci == ci->Fields().end()");
-//            }
-//            return oh;
-//        } else {
-//            std::cout << "s = " << s << " not found in closure \n ------------------------\n";
-//        }
-//        //break;
-//    }
-//
-//    std::string dotted_ids_to_string = Join(dotted_ids_);
-//    std::stringstream ss_closure;
-//    Dump("VariableValue::Execute", closure, ss_closure);
-//
-//    throw std::runtime_error("VariableValue::Execute. Variable " + dotted_ids_to_string
-//        + " is not found in closure. Closure.size() = " + std::to_string(closure.size())
-//        + "\n" + ss_closure.str());
+    size_t count = dotted_ids_.size();
+    ObjectHolder oh = it->second;
+    Runtime::ClassInstance* ci = nullptr;
+    for(size_t i = 1; i < count; ++i){
+        ci = oh.TryAs<Runtime::ClassInstance>();
+        if(!ci){
+            throw std::runtime_error("VariableValue::Execute. ci == nullptr for i = " + std::to_string(i));
+        }
+        oh = ci->Fields()[dotted_ids_[i]];
+    }
+    return oh;
 }
 
 unique_ptr<Print> Print::Variable(std::string var) {
