@@ -143,11 +143,11 @@ void TestInheritance() {
 }
 
 void RunObjectsTests(TestRunner& tr) {
-//  RUN_TEST(tr, Runtime::TestNumber);
-//  RUN_TEST(tr, Runtime::TestString);
-    RUN_TEST(tr, Runtime::TestFields);
-//  RUN_TEST(tr, Runtime::TestBaseClass);
-//  RUN_TEST(tr, Runtime::TestInheritance);
+  RUN_TEST(tr, Runtime::TestNumber);
+  RUN_TEST(tr, Runtime::TestString);
+  RUN_TEST(tr, Runtime::TestFields);
+  RUN_TEST(tr, Runtime::TestBaseClass);
+  RUN_TEST(tr, Runtime::TestInheritance);
 }
 
 } /* namespace Runtime */

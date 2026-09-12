@@ -63,13 +63,13 @@ ObjectHolder VariableValue::Execute(Closure& closure) {
     }
     size_t count = dotted_ids_.size();
     ObjectHolder oh = it->second;
-    Runtime::ClassInstance* ci = nullptr;
+    auto ci = oh.TryAs<Runtime::ClassInstance>();
     for(size_t i = 1; i < count; ++i){
-        ci = oh.TryAs<Runtime::ClassInstance>();
         if(!ci){
             throw std::runtime_error("VariableValue::Execute. ci == nullptr for i = " + std::to_string(i));
         }
         oh = ci->Fields()[dotted_ids_[i]];
+        ci = oh.TryAs<Runtime::ClassInstance>();
     }
     return oh;
 }
@@ -239,7 +239,6 @@ FieldAssignment::FieldAssignment(VariableValue object, std::string field_name, s
 {}
 
 ObjectHolder FieldAssignment::Execute(Runtime::Closure& closure) {
-    //std::string s = field_name_;
     Dump("FieldAssignment::Execute. field_name_ = " + field_name_, closure);
     ObjectHolder oh = object_.Execute(closure);
     auto ci = oh.TryAs<Runtime::ClassInstance>();
@@ -249,11 +248,6 @@ ObjectHolder FieldAssignment::Execute(Runtime::Closure& closure) {
 
     ci->Fields()[field_name_] = right_value_->Execute(closure);
     return ci->Fields()[field_name_];
-//    closure["self"] = object_.Execute(closure);
-//    //object_.name
-//    closure[field_name_] = right_value_->Execute(closure);
-//    return closure[field_name_];
-
 }
 
 IfElse::IfElse(
@@ -303,8 +297,6 @@ NewInstance::NewInstance(const Runtime::Class& class_) : NewInstance(class_, {})
 
 ObjectHolder NewInstance::Execute(Runtime::Closure& closure) {
     Runtime::ClassInstance object{class_};
-    //object.Fields()["self"] = Runtime::ObjectHolder::Share(object);
-
     const Runtime::Method* m = class_.GetMethod("__init__");
     if(m){
         size_t count = args_.size();

@@ -65,34 +65,12 @@ ObjectHolder ClassInstance::Call(const std::string& method, const std::vector<Ob
     }
 
     std::cout << "ClassInstance::Call Fields().size() = " << Fields().size() << '\n';
-    if(Fields().empty()){
+    if(auto it = Fields().find("self"); it == Fields().end()){
         Runtime::ClassInstance object{class_};
         Fields()["self"] = Runtime::ObjectHolder::Share(object);
-
-        //return m->body->Execute(object.Fields());
     }
 
     return m->body->Execute(Fields());
-//    if(auto it = this->Fields().find("self"); it == this->Fields().end()) {
-//        ClassInstance ci(class_);
-//        for (size_t i = 0; i < params_count; ++i) {
-//            ci.Fields()[m->formal_params[i]] = actual_args[i];
-//        }
-//        this->Fields()["self"] = ObjectHolder::Share(ci);
-//    }
-//
-//    for(const auto& [key, value] : this->Fields()){
-//        std::cout << "[" << key << "]" << '\n';
-//    }
-//    std::cout << "1---------------------\n";
-//
-//    ObjectHolder aaa =  m->body->Execute(this->Fields());
-//    for(const auto& [key, value] : this->Fields()){
-//        std::cout << "[" << key << "]" << '\n';
-//    }
-//    std::cout << "2---------------------\n";
-//
-//    return aaa; // m->body->Execute(ci.Fields());
 }
 
 Class::Class(std::string name, std::vector<Method> methods, const Class* parent)
