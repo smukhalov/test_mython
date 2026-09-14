@@ -36,9 +36,24 @@ void Dump(const std::string& prefix, const Closure& closure, std::ostream& out =
 
 ObjectHolder Assignment::Execute(Closure& closure) {
     Dump("Assignment::Execute before. var_name - " + var_name, closure);
-    closure[var_name] = right_value->Execute(closure);
+    //ObjectHolder oh = right_value->Execute(closure);
+    //closure[var_name] = right_value->Execute(closure);
+    ObjectHolder oh = right_value->Execute(closure);
+
+    auto ci =  oh.TryAs<Runtime::ClassInstance>();
+    if(ci){
+        size_t count1 = ci->Fields().size();
+        ci->Fields()["self"] = Runtime::ObjectHolder::Share(*oh.Get());
+    }
+
+//    auto ci1 =  ci->Fields()["self"].TryAs<Runtime::ClassInstance>();
+//    size_t count = ci1->Fields().size();
+//    int a = 1;
+
+    closure[var_name] = oh;
     Dump("Assignment::Execute after", closure);
-    return {}; // closure[var_name];
+
+    return closure[var_name];
 }
 
 Assignment::Assignment(std::string var, std::unique_ptr<Statement> rv)
@@ -63,13 +78,13 @@ ObjectHolder VariableValue::Execute(Closure& closure) {
     }
     size_t count = dotted_ids_.size();
     ObjectHolder oh = it->second;
-    auto ci = oh.TryAs<Runtime::ClassInstance>();
     for(size_t i = 1; i < count; ++i){
+        auto ci = oh.TryAs<Runtime::ClassInstance>();
         if(!ci){
             throw std::runtime_error("VariableValue::Execute. ci == nullptr for i = " + std::to_string(i));
         }
         oh = ci->Fields()[dotted_ids_[i]];
-        ci = oh.TryAs<Runtime::ClassInstance>();
+        //ci = oh.TryAs<Runtime::ClassInstance>();
     }
     return oh;
 }
@@ -297,6 +312,8 @@ NewInstance::NewInstance(const Runtime::Class& class_) : NewInstance(class_, {})
 
 ObjectHolder NewInstance::Execute(Runtime::Closure& closure) {
     Runtime::ClassInstance object{class_};
+    object.Fields()["self"] = Runtime::ObjectHolder::Share(object);
+
     const Runtime::Method* m = class_.GetMethod("__init__");
     if(m){
         size_t count = args_.size();
@@ -308,7 +325,6 @@ ObjectHolder NewInstance::Execute(Runtime::Closure& closure) {
 
         object.Call("__init__", actual_args);
     }
-
     return Runtime::ObjectHolder::Own(std::move(object));
 }
 

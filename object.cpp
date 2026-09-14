@@ -67,7 +67,7 @@ ObjectHolder ClassInstance::Call(const std::string& method, const std::vector<Ob
     std::cout << "ClassInstance::Call Fields().size() = " << Fields().size() << '\n';
     if(auto it = Fields().find("self"); it == Fields().end()){
         Runtime::ClassInstance object{class_};
-        Fields()["self"] = Runtime::ObjectHolder::Share(object);
+        Fields()["self"] = Runtime::ObjectHolder::Own(std::move(object));
     }
 
     return m->body->Execute(Fields());

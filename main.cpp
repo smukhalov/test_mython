@@ -143,13 +143,17 @@ class Counter:
 
 x = Counter()
 x.add()
-print x.value
+y = x
+y.add()
+z = y
+z.add()
+print x.value, y.value
 
 )");
     ostringstream output;
     RunMythonProgram(input, output);
 
-    ASSERT_EQUAL(output.str(), "2\n");
+    ASSERT_EQUAL(output.str(), "4 4\n");
 }
 
 void Test3() {
@@ -159,33 +163,31 @@ class Counter:
     self.value = 2
 
 x = Counter()
-
-print x.value
+y = x
+print x.value, y.value
 
 )");
     ostringstream output;
     RunMythonProgram(input, output);
 
-    ASSERT_EQUAL(output.str(), "2\n");
+    ASSERT_EQUAL(output.str(), "2 2\n");
 }
 
 void TestAll() {
     TestRunner tr;
-//    Runtime::RunObjectHolderTests(tr);
-//    Runtime::RunObjectsTests(tr);
-//    Ast::RunUnitTests(tr);
-//    Parse::RunLexerTests(tr);
+    Runtime::RunObjectHolderTests(tr);
+    Runtime::RunObjectsTests(tr);
+    Ast::RunUnitTests(tr);
+    Parse::RunLexerTests(tr);
 //
-//    RUN_TEST(tr, TestSimplePrints);
-//    RUN_TEST(tr, TestAssignments);
-//    RUN_TEST(tr, TestArithmetics);
+    RUN_TEST(tr, TestSimplePrints);
+    RUN_TEST(tr, TestAssignments);
+    RUN_TEST(tr, TestArithmetics);
 
-    //TestParseProgram(tr);
-    //RUN_TEST(tr, TestVariablesArePointers);
+    TestParseProgram(tr);
+    RUN_TEST(tr, TestVariablesArePointers);
 
-//    RUN_TEST(tr, Test1);
-//    RUN_TEST(tr, Test2);
+    RUN_TEST(tr, Test1);
+    RUN_TEST(tr, Test2);
     RUN_TEST(tr, Test3);
-    //RUN_TEST(tr, TestVariablesArePointers);
-    //RUN_TEST(tr, TestAssignments);
 }
