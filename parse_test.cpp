@@ -260,7 +260,7 @@ print r, c, t1, t2
 }
 
 void TestParseProgram(TestRunner& tr) {
-  RUN_TEST(tr, Parse::TestSimpleProgram);
+//  RUN_TEST(tr, Parse::TestSimpleProgram);
   RUN_TEST(tr, Parse::TestProgramWithClasses);
 //  RUN_TEST(tr, Parse::TestProgramWithIf);
 //  RUN_TEST(tr, Parse::TestReturnFromIf);

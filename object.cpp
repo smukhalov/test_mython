@@ -10,12 +10,12 @@ using namespace std;
 namespace Runtime {
 
 void ClassInstance::Print(std::ostream& os) {
-    const std::string str_name("__str__");
-    const Method* m = class_.GetMethod(str_name);
+    const std::string method("__str__");
+    const Method* m = class_.GetMethod(method);
     if(m == nullptr){
         os << (this);
     } else {
-        ObjectHolder h = Call(str_name, std::vector<ObjectHolder>());
+        ObjectHolder h = Call(method, std::vector<ObjectHolder>());
         Object* o = h.Get(); //
         if(o){
             o->Print(os);
@@ -64,7 +64,7 @@ ObjectHolder ClassInstance::Call(const std::string& method, const std::vector<Ob
         Fields()[m->formal_params[i]] = actual_args[i];
     }
 
-    std::cout << "ClassInstance::Call Fields().size() = " << Fields().size() << '\n';
+    //std::cout << "ClassInstance::Call Fields().size() = " << Fields().size() << '\n';
     if(auto it = Fields().find("self"); it == Fields().end()){
         Runtime::ClassInstance object{class_};
         Fields()["self"] = Runtime::ObjectHolder::Own(std::move(object));

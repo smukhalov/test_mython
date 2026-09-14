@@ -27,28 +27,23 @@ std::string Join(const std::vector<std::string>& v, char delimiter = '.') {
 }
 
 void Dump(const std::string& prefix, const Closure& closure, std::ostream& out = std::cout){
-    out << prefix << '\n';
-    for(const auto& [key, value] : closure){
-        out << "[" << key << "]" << '\n';
-    }
-    out << "-----------------\n";
+    return;
+//    out << prefix << '\n';
+//    for(const auto& [key, value] : closure){
+//        out << "[" << key << "]" << '\n';
+//    }
+//    out << "-----------------\n";
 }
 
 ObjectHolder Assignment::Execute(Closure& closure) {
     Dump("Assignment::Execute before. var_name - " + var_name, closure);
-    //ObjectHolder oh = right_value->Execute(closure);
-    //closure[var_name] = right_value->Execute(closure);
     ObjectHolder oh = right_value->Execute(closure);
 
     auto ci =  oh.TryAs<Runtime::ClassInstance>();
     if(ci){
-        size_t count1 = ci->Fields().size();
+        //size_t count1 = ci->Fields().size();
         ci->Fields()["self"] = Runtime::ObjectHolder::Share(*oh.Get());
     }
-
-//    auto ci1 =  ci->Fields()["self"].TryAs<Runtime::ClassInstance>();
-//    size_t count = ci1->Fields().size();
-//    int a = 1;
 
     closure[var_name] = oh;
     Dump("Assignment::Execute after", closure);
@@ -84,7 +79,6 @@ ObjectHolder VariableValue::Execute(Closure& closure) {
             throw std::runtime_error("VariableValue::Execute. ci == nullptr for i = " + std::to_string(i));
         }
         oh = ci->Fields()[dotted_ids_[i]];
-        //ci = oh.TryAs<Runtime::ClassInstance>();
     }
     return oh;
 }
@@ -168,7 +162,11 @@ ObjectHolder Add::Execute(Closure& closure) {
 
     if(auto lhs = lh.TryAs<Runtime::String>(), rhs = rh.TryAs<Runtime::String>();
             lhs && rhs){
-        return ObjectHolder::Own(Runtime::String(lhs->GetValue() + rhs->GetValue()));
+        //ObjectHolder oh = ObjectHolder::Own(Runtime::String(lhs->GetValue() + rhs->GetValue()));
+        //std::string s = lhs->GetValue() + rhs->GetValue();
+        ObjectHolder oh = ObjectHolder::Own(std::move(Runtime::String(lhs->GetValue() + rhs->GetValue())));
+        return oh;
+        //return ObjectHolder::Own(Runtime::String(lhs->GetValue() + rhs->GetValue()));
     }
 
     if(lh.TryAs<Runtime::ClassInstance>() && (rh.TryAs<Runtime::Number>() || rh.TryAs<Runtime::String>())
@@ -228,7 +226,7 @@ ObjectHolder Div::Execute(Runtime::Closure& closure) {
 }
 
 ObjectHolder Compound::Execute(Closure& closure) {
-    std::cout << "Compound::Execute. statements_.count - " << statements_.size() << ", closure.size = " << closure.size() << '\n';
+    //std::cout << "Compound::Execute. statements_.count - " << statements_.size() << ", closure.size = " << closure.size() << '\n';
     for(std::unique_ptr<Statement>& x : statements_){
         Dump("Compound::Execute before", closure);
         ObjectHolder  oh = x->Execute(closure);
@@ -238,7 +236,8 @@ ObjectHolder Compound::Execute(Closure& closure) {
 }
 
 ObjectHolder Return::Execute(Closure& closure) {
-    return statement_->Execute(closure);
+    ObjectHolder oh = statement_->Execute(closure);
+    return oh;
 }
 
 ClassDefinition::ClassDefinition(ObjectHolder cls)

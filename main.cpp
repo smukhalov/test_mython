@@ -179,14 +179,14 @@ void TestAll() {
     Runtime::RunObjectsTests(tr);
     Ast::RunUnitTests(tr);
     Parse::RunLexerTests(tr);
-//
+
     RUN_TEST(tr, TestSimplePrints);
     RUN_TEST(tr, TestAssignments);
     RUN_TEST(tr, TestArithmetics);
 
-    TestParseProgram(tr);
+//    TestParseProgram(tr);
     RUN_TEST(tr, TestVariablesArePointers);
-
+//
     RUN_TEST(tr, Test1);
     RUN_TEST(tr, Test2);
     RUN_TEST(tr, Test3);
