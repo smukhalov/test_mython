@@ -248,7 +248,6 @@ FieldAssignment::FieldAssignment(VariableValue object, std::string field_name, s
 {}
 
 ObjectHolder FieldAssignment::Execute(Runtime::Closure& closure) {
-    Dump("FieldAssignment::Execute. field_name_ = " + field_name_, closure);
     ObjectHolder oh = object_.Execute(closure);
     auto ci = oh.TryAs<Runtime::ClassInstance>();
     if(!ci){
@@ -263,37 +262,38 @@ IfElse::IfElse(
   std::unique_ptr<Statement> condition,
   std::unique_ptr<Statement> if_body,
   std::unique_ptr<Statement> else_body
-)
-{} //TODO!!
+) : condition_(std::move(condition)), if_body_(std::move(if_body)), else_body_(std::move(else_body))
+{}
 
 ObjectHolder IfElse::Execute(Runtime::Closure& closure) {
-    //TODO!!
-    throw std::runtime_error("IfElse::Execute");
+    ObjectHolder oh_condition = condition_->Execute(closure);
+    return (Runtime::IsTrue(oh_condition)) ? if_body_->Execute(closure) : else_body_->Execute(closure);
 }
 
 ObjectHolder Or::Execute(Runtime::Closure& closure) {
-    //TODO!!
-    throw std::runtime_error("Or::Execute");
+    ObjectHolder lh = lhs->Execute(closure);
+    ObjectHolder rh = rhs->Execute(closure);
+    return Runtime::ObjectHolder::Own(Runtime::Bool((Runtime::IsTrue(lh) || Runtime::IsTrue(rh))));
 }
 
 ObjectHolder And::Execute(Runtime::Closure& closure) {
-    //TODO!!
-    throw std::runtime_error("And::Execute");
+    ObjectHolder lh = lhs->Execute(closure);
+    ObjectHolder rh = rhs->Execute(closure);
+    return Runtime::ObjectHolder::Own(Runtime::Bool((Runtime::IsTrue(lh) && Runtime::IsTrue(rh))));
 }
 
 ObjectHolder Not::Execute(Runtime::Closure& closure) {
-    //TODO!!
-    throw std::runtime_error("Not::Execute");
+    ObjectHolder oh = argument_->Execute(closure);
+    return Runtime::ObjectHolder::Own(Runtime::Bool((!Runtime::IsTrue(oh))));
 }
 
 Comparison::Comparison(
   Comparator cmp, unique_ptr<Statement> lhs, unique_ptr<Statement> rhs
-) {
-} //TODO!!
+)  : comparator_(cmp), lhs_(std::move(lhs)), rhs_(std::move(rhs))
+{}
 
 ObjectHolder Comparison::Execute(Runtime::Closure& closure) {
-    //TODO!!
-    throw std::runtime_error("Comparison::Execute");
+    return Runtime::ObjectHolder::Own(Runtime::Bool(comparator_(lhs_->Execute(closure), rhs_->Execute(closure))));
 }
 
 NewInstance::NewInstance(

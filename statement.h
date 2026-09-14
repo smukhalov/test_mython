@@ -222,7 +222,7 @@ public:
   ObjectHolder Execute(Runtime::Closure& closure) override;
 
 private:
-  std::unique_ptr<Statement> condition, if_body, else_body;
+  std::unique_ptr<Statement> condition_, if_body_, else_body_;
 };
 
 class Comparison : public Statement {
@@ -238,8 +238,8 @@ public:
   ObjectHolder Execute(Runtime::Closure& closure) override;
 
 private:
-  Comparator comparator;
-  std::unique_ptr<Statement> left, right;
+  Comparator comparator_;
+  std::unique_ptr<Statement> lhs_, rhs_;
 };
 
 void RunUnitTests(TestRunner& tr);
