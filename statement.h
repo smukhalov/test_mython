@@ -193,8 +193,7 @@ class Return : public Statement {
 public:
   explicit Return(std::unique_ptr<Statement> statement)
     : statement_(std::move(statement))
-  {
-  }
+  {}
 
   ObjectHolder Execute(Runtime::Closure& closure) override;
 private:

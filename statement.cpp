@@ -162,11 +162,7 @@ ObjectHolder Add::Execute(Closure& closure) {
 
     if(auto lhs = lh.TryAs<Runtime::String>(), rhs = rh.TryAs<Runtime::String>();
             lhs && rhs){
-        //ObjectHolder oh = ObjectHolder::Own(Runtime::String(lhs->GetValue() + rhs->GetValue()));
-        //std::string s = lhs->GetValue() + rhs->GetValue();
-        ObjectHolder oh = ObjectHolder::Own(std::move(Runtime::String(lhs->GetValue() + rhs->GetValue())));
-        return oh;
-        //return ObjectHolder::Own(Runtime::String(lhs->GetValue() + rhs->GetValue()));
+        return ObjectHolder::Own(Runtime::String(lhs->GetValue() + rhs->GetValue()));
     }
 
     if(lh.TryAs<Runtime::ClassInstance>() && (rh.TryAs<Runtime::Number>() || rh.TryAs<Runtime::String>())
@@ -226,18 +222,17 @@ ObjectHolder Div::Execute(Runtime::Closure& closure) {
 }
 
 ObjectHolder Compound::Execute(Closure& closure) {
-    //std::cout << "Compound::Execute. statements_.count - " << statements_.size() << ", closure.size = " << closure.size() << '\n';
     for(std::unique_ptr<Statement>& x : statements_){
-        Dump("Compound::Execute before", closure);
         ObjectHolder  oh = x->Execute(closure);
-        Dump("Compound::Execute after", closure);
+        if(dynamic_cast<Return*>(x.get())){
+            return oh;
+        }
     }
     return {};
 }
 
 ObjectHolder Return::Execute(Closure& closure) {
-    ObjectHolder oh = statement_->Execute(closure);
-    return oh;
+    return statement_->Execute(closure);
 }
 
 ClassDefinition::ClassDefinition(ObjectHolder cls)
