@@ -222,9 +222,15 @@ ObjectHolder Div::Execute(Runtime::Closure& closure) {
 }
 
 ObjectHolder Compound::Execute(Closure& closure) {
-    for(std::unique_ptr<Statement>& x : statements_){
+    size_t count = statements_.size();
+    if(count == 1){
+        return statements_[0]->Execute(closure);
+    }
+
+    for(size_t i = 0; i < count; ++i){
+        std::unique_ptr<Statement>& x = statements_[i];
         ObjectHolder  oh = x->Execute(closure);
-        if(dynamic_cast<Return*>(x.get())){
+        if(dynamic_cast<Return*>(oh.Get())){
             return oh;
         }
     }

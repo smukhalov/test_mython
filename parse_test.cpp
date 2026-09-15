@@ -263,9 +263,9 @@ void TestParseProgram(TestRunner& tr) {
   RUN_TEST(tr, Parse::TestSimpleProgram);
   RUN_TEST(tr, Parse::TestProgramWithClasses);
   RUN_TEST(tr, Parse::TestProgramWithIf);
-//  RUN_TEST(tr, Parse::TestReturnFromIf);
-//  RUN_TEST(tr, Parse::TestRecursion);
-//  RUN_TEST(tr, Parse::TestRecursion2);
-//  RUN_TEST(tr, Parse::TestComplexLogicalExpression);
-//  RUN_TEST(tr, Parse::TestClassicalPolymorphism);
+  RUN_TEST(tr, Parse::TestReturnFromIf);
+  RUN_TEST(tr, Parse::TestRecursion);
+  RUN_TEST(tr, Parse::TestRecursion2);
+  RUN_TEST(tr, Parse::TestComplexLogicalExpression);
+  RUN_TEST(tr, Parse::TestClassicalPolymorphism);
 }

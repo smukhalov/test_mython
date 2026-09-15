@@ -175,17 +175,18 @@ print x.value, y.value
 
 void TestAll() {
     TestRunner tr;
-//    Runtime::RunObjectHolderTests(tr);
-//    Runtime::RunObjectsTests(tr);
-//    Ast::RunUnitTests(tr);
-//    Parse::RunLexerTests(tr);
-//
-//    RUN_TEST(tr, TestSimplePrints);
-//    RUN_TEST(tr, TestAssignments);
-//    RUN_TEST(tr, TestArithmetics);
+    Runtime::RunObjectHolderTests(tr);
+    Runtime::RunObjectsTests(tr);
+    Ast::RunUnitTests(tr);
+    Parse::RunLexerTests(tr);
+
+    RUN_TEST(tr, TestSimplePrints);
+    RUN_TEST(tr, TestAssignments);
+    RUN_TEST(tr, TestArithmetics);
+    RUN_TEST(tr, TestVariablesArePointers);
 
     TestParseProgram(tr);
-//    RUN_TEST(tr, TestVariablesArePointers);
+
 //
 //    RUN_TEST(tr, Test1);
 //    RUN_TEST(tr, Test2);
