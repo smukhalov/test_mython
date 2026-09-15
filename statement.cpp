@@ -273,7 +273,14 @@ IfElse::IfElse(
 
 ObjectHolder IfElse::Execute(Runtime::Closure& closure) {
     ObjectHolder oh_condition = condition_->Execute(closure);
-    return (Runtime::IsTrue(oh_condition)) ? if_body_->Execute(closure) : else_body_->Execute(closure);
+    if(Runtime::IsTrue(oh_condition)){
+        return if_body_->Execute(closure);
+    }
+    if(else_body_){
+        return else_body_->Execute(closure);
+    }
+    return {};
+    //return (Runtime::IsTrue(oh_condition)) ? if_body_->Execute(closure) : else_body_->Execute(closure);
 }
 
 ObjectHolder Or::Execute(Runtime::Closure& closure) {
