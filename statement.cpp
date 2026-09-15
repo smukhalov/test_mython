@@ -26,28 +26,23 @@ std::string Join(const std::vector<std::string>& v, char delimiter = '.') {
     return ss.str();
 }
 
-void Dump(const std::string& prefix, const Closure& closure, std::ostream& out = std::cout){
-    return;
+//void Dump(const std::string& prefix, const Closure& closure, std::ostream& out = std::cout){
+
 //    out << prefix << '\n';
 //    for(const auto& [key, value] : closure){
 //        out << "[" << key << "]" << '\n';
 //    }
 //    out << "-----------------\n";
-}
+//}
 
 ObjectHolder Assignment::Execute(Closure& closure) {
-    Dump("Assignment::Execute before. var_name - " + var_name, closure);
     ObjectHolder oh = right_value->Execute(closure);
-
     auto ci =  oh.TryAs<Runtime::ClassInstance>();
     if(ci){
-        //size_t count1 = ci->Fields().size();
         ci->Fields()["self"] = Runtime::ObjectHolder::Share(*oh.Get());
     }
 
     closure[var_name] = oh;
-    Dump("Assignment::Execute after", closure);
-
     return closure[var_name];
 }
 
@@ -223,22 +218,27 @@ ObjectHolder Div::Execute(Runtime::Closure& closure) {
 
 ObjectHolder Compound::Execute(Closure& closure) {
     size_t count = statements_.size();
-    if(count == 1){
-        return statements_[0]->Execute(closure);
-    }
-
     for(size_t i = 0; i < count; ++i){
         std::unique_ptr<Statement>& x = statements_[i];
         ObjectHolder  oh = x->Execute(closure);
-        if(dynamic_cast<Return*>(oh.Get())){
+        if(dynamic_cast<Return*>(x.get())){
             return oh;
+        }
+        if(dynamic_cast<IfElse*>(x.get())){
+            if(auto it = closure.find("return"); it != closure.end()){
+                ObjectHolder oh_return = it->second;
+                closure.erase(it);
+                return oh_return;
+            }
         }
     }
     return {};
 }
 
 ObjectHolder Return::Execute(Closure& closure) {
-    return statement_->Execute(closure);
+    ObjectHolder oh = statement_->Execute(closure);
+    closure["return"] = oh;
+    return oh;
 }
 
 ClassDefinition::ClassDefinition(ObjectHolder cls)
